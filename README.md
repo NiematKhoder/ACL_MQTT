@@ -72,7 +72,7 @@ volumes:
 
 ##  6  Broker configuration files
 
-### 6.1  `broker/conf/mosquitto.conf`
+### 6.1  `broker/conf/mosquitto.conf`
 
 ```conf
 # --- minimal secure config ---
@@ -87,7 +87,7 @@ acl_file      /mosquitto/config/aclfile  # topic permissions
 
 ---
 
-### 6.2  Generate the `passwd` file (hashed credentials)
+### 6.2  Generate the `passwd` file (hashed credentials)
 
 Run once for each user; Docker keeps your host clean:
 
@@ -127,7 +127,7 @@ Lines are evaluated top‑down; anything not explicitly allowed is denied. ci
 ---
 
 
-## 7  `app/publisher.py`
+## 7  `app/publisher.py`
 
 ```python
 import time, paho.mqtt.client as mqtt
@@ -154,7 +154,7 @@ The code is pure Paho‑MQTT; nothing special for ACLs. citeturn0search0�
 
 ---
 
-## 8  Subscribers
+## 8  Subscribers
 
 Both scripts are identical except for `USERNAME/PASS` and the topic variable that we’ll toggle in phase 2.
 
@@ -184,7 +184,7 @@ client.loop_forever()
 
 ---
 
-## 9  Running and testing
+## 9  Running and testing
 
 ### Phase 1 — normal operation
 
@@ -215,7 +215,7 @@ Expected console output:
 TOPIC = "topic2"   # now trying to spy on topic2
 ```
 
-3. Run it again:  
+ 3. Run it again:  
 
 ```powershell
 python app\subscriber1.py
@@ -227,4 +227,3 @@ python app\subscriber1.py
 
 ---
 
-That’s the complete implementation—broker, ACLs, users, and clients—ready to clone and run. No licence text is included, so you can drop it straight into your own repo.
