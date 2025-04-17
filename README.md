@@ -6,7 +6,7 @@ An **Access‑Control List (ACL)** then tells the broker *what that client may d
 
 ---
 
-## 2  Prerequisites
+##  2  Prerequisites
 
 | Tool | Why | Quick check |
 |------|-----|-------------|
@@ -17,7 +17,7 @@ An **Access‑Control List (ACL)** then tells the broker *what that client may d
 
 ---
 
-## 3  Project structure
+##  3  Project structure
 
 ```text
 mqtt-acl-demo/
@@ -35,7 +35,7 @@ mqtt-acl-demo/
 
 ---
 
-## 4  Create the folders (PowerShell)
+##  4  Create the folders (PowerShell)
 
 ```powershell
 # anywhere you like
@@ -45,7 +45,7 @@ cd mqtt-acl-demo
 
 ---
 
-## 5  `docker-compose.yml`
+##  5  `docker-compose.yml`
 
 ```yaml
 version: "3.9"
@@ -70,7 +70,7 @@ volumes:
 
 ---
 
-## 6  Broker configuration files
+##  6  Broker configuration files
 
 ### 6.1  `broker/conf/mosquitto.conf`
 
@@ -105,7 +105,7 @@ The tool appends lines in the format `username:hash`, where the hash is bcrypt�
 
 ---
 
-### 6.3  `broker/conf/aclfile`
+###  6.3  `broker/conf/aclfile`
 
 ```conf
 # --- publisher may write both topics ---
@@ -125,6 +125,7 @@ topic read topic2
 Lines are evaluated top‑down; anything not explicitly allowed is denied. citeturn6search3
 
 ---
+
 
 ## 7  `app/publisher.py`
 
