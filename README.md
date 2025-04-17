@@ -1,12 +1,3 @@
-Below is a fully‑worked *mini‑project* that shows how to run an Eclipse Mosquitto broker in Docker **with per‑topic ACLs** and three simple Python clients:
-
-* `publisher.py` publishes on **topic1** and **topic2**  
-* `subscriber1.py` may read **topic1** only  
-* `subscriber2.py` may read **topic2** only
-
-The guide is written for **Windows 10/11** with Docker Desktop and Python 3.9 + installed, but the same files run unchanged on macOS/Linux.
-
----
 
 ## 1  What an ACL is and why we need it
 
