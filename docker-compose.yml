@@ -1,0 +1,12 @@
+version: '3'
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto_broker1
+    ports:
+      - "1883:1884"
+      - "9001:9003"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log

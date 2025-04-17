@@ -1,0 +1,12 @@
+# publisher may write to both topics
+user pub
+topic write topic1
+topic write topic2
+
+# subscriber 1 may only READ topic1
+user sub1
+topic read topic1
+
+# subscriber 2 may only READ topic2
+user sub2
+topic read topic2
