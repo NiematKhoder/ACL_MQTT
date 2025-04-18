@@ -2,7 +2,7 @@
 ## 1  What an ACL is and why we need it
 
 In MQTT the broker first **authenticates** a client (username / password, TLS cert, JWT, …).  
-An **Access‑Control List (ACL)** then tells the broker *what that client may do* on individual topics (`read`, `write`, `readwrite`, or `deny`). All enforcement happens inside the broker; nothing special is coded in the Python clients.  citeturn6search5
+An **Access‑Control List (ACL)** then tells the broker *what that client may do* on individual topics (`read`, `write`, `readwrite`, or `deny`). All enforcement happens inside the broker; nothing special is coded in the Python clients. 
 
 ---
 
