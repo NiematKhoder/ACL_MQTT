@@ -192,7 +192,10 @@ topic read topic2
 
 > [!NOTE]
 > **Note – roles reflected in credentials**  
-> - The **`pub`** username/password acts as the *broker administrator* account: it has full **read + write** rights on all topics.  
+> - The **`pub`** username/password acts as the *broker administrator* account: it has full **read + write** rights on all topics.
+>   ``` cmd
+>   user pub
+>   topic readwrite #
 > - Each topic also has its own dedicated consumer credential:  
 >   - **`sub1`** ⇒ access **only** to `topic1`  
 >   - **`sub2`** ⇒ access **only** to `topic2`  
