@@ -43,19 +43,9 @@ cd ACL_MQTT
 ```
 ---
 
-### 5  Start the broker
+##  5  Broker configuration files: Explanation
 
-```powershell
-docker compose up -d
-```
-
-This launches the Mosquitto container in the background.
-
---- 
-
-##  6  Broker configuration files: Explanation
-
-### 6.1  `broker/conf/mosquitto.conf`
+### 5.1  `broker/conf/mosquitto.conf`
 
 ```conf
 # --- minimal secure config ---
@@ -76,7 +66,7 @@ acl_file      /mosquitto/config/aclfile  # topic permissions
 > authentication / authorisation rules we’re building in this tutorial would be ignored.
 ---
 
-### 6.2  Generate the `passwd` file (hashed credentials)
+### 5.2  Generate the `passwd` file (hashed credentials)
 
 Run once for each user; Docker keeps your host clean:
 
@@ -165,7 +155,7 @@ Mosquitto uses this file at startup (via `password_file` in `mosquitto.conf`) to
 
 ---
 
-###  6.3  `broker/conf/aclfile`
+###  5.3  `broker/conf/aclfile`
 
 ```conf
 # --- publisher may write both topics ---
@@ -194,7 +184,7 @@ topic read topic2
 ---
 
 
-## 7  Publisher**  
+## 6  Publisher**  
 
 The publisher will run in a continuous loop, sending a message to **both** `topic1` and `topic2` over and over again. It authenticates to the broker using:  
 
@@ -208,7 +198,7 @@ Here we assign the **publisher’s** username/password so it can successfully co
 
 ---
 
-**8  Subscribers**  
+**7  Subscribers**  
 
 Each subscriber runs a simple loop that:  
 - Authenticates with its own **USERNAME/PASS**  
@@ -234,9 +224,9 @@ In **Phase 2**, you can demonstrate an ACL denial by changing `TOPIC` in `subsc
 
 ---
 
-## 9  Running and testing
+## 8  Running and testing
 
-### Phase 1 — normal operation
+### Phase 1 — normal operation
 
 ```powershell
 # 1. start broker
@@ -250,13 +240,13 @@ python app\subscriber2.py
 python app\publisher.py
 ```
 
-Expected console output:
+**Expected console output:**
 
 * **subscriber1** shows only `topic1` messages  
 * **subscriber2** shows only `topic2` messages  
 * publisher shows every message it sends.
 
-### Phase 2 — unauthorised subscribe
+### Phase 2 — unauthorised subscribe
 
 1. Stop **subscriber1** (`Ctrl+C`)  
 2. Edit *line 8* in `subscriber1.py`:
