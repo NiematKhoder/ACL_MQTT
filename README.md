@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-1. [What an ACL is and why we need it](#what-an-acl-is-and-why-we-need-it)  
+1. [What an ACL is and why we need it](#1_what-an-acl-is-and-why-we-need-it)  
 2. [Prerequisites](#prerequisites)  
 3. [Project structure](#project-structure)  
 4. [Get the project](#get-the-project)  
