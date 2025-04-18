@@ -2,19 +2,20 @@
 
 ## Table of Contents
 
-1. [What an ACL is and why we need it](#1--what-an-acl-is-and-why-we-need-it)  
-2. [Prerequisites](#2-prerequisites)  
-3. [Project structure](#3-project-structure)  
-4. [Get the project](#4-get-the-project)  
-5. [Broker configuration files: Explanation](#5-broker-configuration-files-explanation)  
-   - [5.1 `mosquitto.conf`](#51-brokerconfmosquitto-conf)  
-   - [5.2 Generate the `passwd` file (hashed credentials)](#52-generate-the-passwd-file-hashed-credentials)  
-   - [5.3 `aclfile`](#53-brokerconfaclfile)  
-6. [Publisher](#6-publisher)  
-7. [Subscribers](#7-subscribers)  
-8. [Running and testing](#8-running-and-testing)  
+1. [What an ACL is and why we need it](#what-an-acl-is-and-why-we-need-it)  
+2. [Prerequisites](#prerequisites)  
+3. [Project structure](#project-structure)  
+4. [Get the project](#get-the-project)  
+5. [Broker configuration files: Explanation](#broker-configuration-files-explanation)  
+   - [mosquitto.conf](#mosquitto-conf)  
+   - [Generate the passwd file (hashed credentials)](#generate-the-passwd-file-hashed-credentials)  
+   - [aclfile](#aclfile)  
+6. [Publisher](#publisher)  
+7. [Subscribers](#subscribers)  
+8. [Running and testing](#running-and-testing)  
    - [Phase 1 — normal operation](#phase-1—normal-operation)  
-   - [Phase 2 — unauthorised subscribe](#phase-2—unauthorised-subscribe)
+   - [Phase 2 — unauthorised subscribe](#phase-2—unauthorised-subscribe)  
+
 
 ## 1  What an ACL is and why we need it
 
