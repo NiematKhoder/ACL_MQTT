@@ -22,7 +22,7 @@ An **Access‑Control List (ACL)** then tells the broker *what that client may d
 ```text
 mqtt-acl-demo/
 ├─ docker-compose.yml
-├─ broker/
+├─ mosquitto/
 │  └─ conf/
 │     ├─ mosquitto.conf
 │     ├─ aclfile
@@ -35,56 +35,45 @@ mqtt-acl-demo/
 
 ---
 
-##  4  Create the folders (PowerShell)
+### 4  Get the project
 
 ```powershell
-# anywhere you like
-mkdir mqtt-acl-demo, mqtt-acl-demo\broker\conf, mqtt-acl-demo\app
-cd mqtt-acl-demo
+git clone https://github.com/NiematKhoder/ACL_MQTT.git
+cd ACL_MQTT
 ```
-
 ---
 
-##  5  `docker-compose.yml`
+### 5  Start the broker
 
-```yaml
-version: "3.9"
-
-services:
-  mosquitto:
-    image: eclipse-mosquitto:2.0
-    container_name: mosquitto
-    restart: unless-stopped
-    ports:
-      - "1883:1883"           # MQTT TCP
-    volumes:
-      - ./broker/conf/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      - ./broker/conf/aclfile:/mosquitto/config/aclfile:ro
-      - ./broker/conf/passwd:/mosquitto/config/passwd:ro
-      - mosquitto_data:/mosquitto/data
-    command: [ "mosquitto", "-c", "/mosquitto/config/mosquitto.conf" ]
-
-volumes:
-  mosquitto_data:
+```powershell
+docker compose up -d
 ```
 
----
+This launches the Mosquitto container in the background.
 
-##  6  Broker configuration files
+--- 
+
+##  6  Broker configuration files: Explanation
 
 ### 6.1  `broker/conf/mosquitto.conf`
 
 ```conf
 # --- minimal secure config ---
-listener 1883
+listener 1884
 allow_anonymous false
 
 password_file /mosquitto/config/passwd   # created in 6.2
 acl_file      /mosquitto/config/aclfile  # topic permissions
 ```
 
-*`password_file`* and *`acl_file`* are the two key directives. citeturn6search3
+*`password_file`* and *`acl_file`* are the two key directives.
 
+> [!IMPORTANT]
+> **Why `allow_anonymous false`?**  
+> Setting it to **false** forces every client to present valid credentials.  
+> If you leave it **true**, Mosquitto lets anonymous clients connect, and those
+> connections **skip both the password check *and* the ACL file**, so the
+> authentication / authorisation rules we’re building in this tutorial would be ignored.
 ---
 
 ### 6.2  Generate the `passwd` file (hashed credentials)
@@ -94,14 +83,85 @@ Run once for each user; Docker keeps your host clean:
 ```powershell
 # run from project root
 docker run --rm -it -v ${PWD}\broker\conf:/mosquitto/config eclipse-mosquitto:2.0 `
-  mosquitto_passwd -b /mosquitto/config/passwd pub  pubpass
+  mosquitto_passwd -b /mosquitto/config/passwd pub  pub1
 docker run --rm -it -v ${PWD}\broker\conf:/mosquitto/config eclipse-mosquitto:2.0 `
-  mosquitto_passwd -b /mosquitto/config/passwd sub1 sub1pass
+  mosquitto_passwd -b /mosquitto/config/passwd sub1 sub1
 docker run --rm -it -v ${PWD}\broker\conf:/mosquitto/config eclipse-mosquitto:2.0 `
-  mosquitto_passwd -b /mosquitto/config/passwd sub2 sub2pass
+  mosquitto_passwd -b /mosquitto/config/passwd sub2 sub2
 ```
 
-The tool appends lines in the format `username:hash`, where the hash is bcrypt‑like and **never reveals the plain password**.  citeturn7search0
+The tool appends lines in the format `username:hash`, where the hash is bcrypt‑like and **never reveals the plain password**. 
+
+Here’s what each line does, step by step:
+
+```powershell
+# 1) Create or update the passwd file inside broker/conf, adding the “pub” user
+docker run --rm -it \
+  -v ${PWD}\broker\conf:/mosquitto/config \
+  eclipse-mosquitto:2.0 `
+  mosquitto_passwd -b /mosquitto/config/passwd pub pub1
+```
+- **`docker run`**  
+  Launches a new container from the given image.
+- **`--rm`**  
+  Automatically removes the container when it exits (keeps your system clean).
+- **`-it`**  
+  Allocates an interactive pseudo‑TTY so you can see prompts (though `-b` “batch” mode suppresses them here).
+- **`-v ${PWD}\broker\conf:/mosquitto/config`**  
+  Mounts your local `broker\conf` folder into the container at `/mosquitto/config`.  
+  - On Windows PowerShell `${PWD}` expands to your current directory path.
+- **`eclipse-mosquitto:2.0`**  
+  The official Mosquitto image (version 2.0) that includes the `mosquitto_passwd` tool.
+- **`` ` mosquitto_passwd -b /mosquitto/config/passwd pub pub1``**  
+  Runs the Mosquitto utility to add (or update) a line in the file `/mosquitto/config/passwd`:
+  - `-b` = batch mode: takes the password from the command line instead of prompting.
+  - `/mosquitto/config/passwd` = the target password file (inside the container, which is your mounted folder).
+  - `pub` = the username to create/update.
+  - `pub1` = the plaintext password; the tool writes a bcrypt‑style hash to the file.
+
+---
+
+```powershell
+# 2) Add subscriber1’s credentials
+docker run --rm -it \
+  -v ${PWD}\broker\conf:/mosquitto/config \
+  eclipse-mosquitto:2.0 `
+  mosquitto_passwd -b /mosquitto/config/passwd sub1 sub1
+```
+Exactly the same as above, but now:
+- **`sub1`** is the username.
+- **`sub1`** (second argument) is its password.
+
+This appends (or replaces) the `sub1:<hash>` line in your `broker/conf/passwd`.
+
+---
+
+```powershell
+# 3) Add subscriber2’s credentials
+docker run --rm -it \
+  -v ${PWD}\broker\conf:/mosquitto/config \
+  eclipse-mosquitto:2.0 `
+  mosquitto_passwd -b /mosquitto/config/passwd sub2 sub2
+```
+Again identical, but for:
+- **`sub2`** as the user,
+- **`sub2`** as its password.
+
+---
+
+### What you end up with
+
+After running these three commands, your `broker/conf/passwd` file will contain three lines, each in the form:
+
+```
+username:hashed-password
+```
+
+- **`pub:<hash>`**  
+- **`sub1:<hash>`**  
+- **`sub2:<hash>`**
+
+Mosquitto uses this file at startup (via `password_file` in `mosquitto.conf`) to authenticate any connecting client. Any change you make here takes effect the next time you restart or reload the broker.
 
 ---
 
@@ -110,8 +170,8 @@ The tool appends lines in the format `username:hash`, where the hash is bcrypt�
 ```conf
 # --- publisher may write both topics ---
 user pub
-topic write topic1
-topic write topic2
+topic readwrite topic1
+topic readwrite topic2
 
 # --- subscriber 1 : read-only topic1 ---
 user sub1
@@ -122,7 +182,14 @@ user sub2
 topic read topic2
 ```
 
-Lines are evaluated top‑down; anything not explicitly allowed is denied. citeturn6search3
+> [!NOTE]
+> **Note – roles reflected in credentials**  
+> - The **`pub`** username/password acts as the *broker administrator* account: it has full **read + write** rights on all topics.  
+> - Each topic also has its own dedicated consumer credential:  
+>   - **`sub1`** ⇒ access **only** to `topic1`  
+>   - **`sub2`** ⇒ access **only** to `topic2`  
+>  
+> You can think of it as **each topic having its own specific username/password**—clients holding a topic’s credentials can only access that topic—while the admin account (`pub`) retains full control for management or debugging across every topic.
 
 ---
 
