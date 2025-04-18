@@ -194,60 +194,43 @@ topic read topic2
 ---
 
 
-## 7  `app/publisher.py`
+## 7  Publisher**  
+
+The publisher will run in a continuous loop, sending a message to **both** `topic1` and `topic2` over and over again. It authenticates to the broker using:  
 
 ```python
-import time, paho.mqtt.client as mqtt
-
-BROKER, PORT   = "localhost", 1883
-TOPICS         = ("topic1", "topic2")   # publish to both
-USERNAME, PASS = "pub", "pubpass"
-
+USERNAME, PASS = "pub", "pub1"
 client = mqtt.Client(client_id="publisher")
 client.username_pw_set(USERNAME, PASS)
-client.connect(BROKER, PORT, keepalive=60)
-
-counter = 0
-while True:
-    for t in TOPICS:
-        payload = f"msg {counter} on {t}"
-        client.publish(t, payload, qos=1)
-        print(f"→ {payload}")
-        time.sleep(0.5)
-    counter += 1
 ```
 
-The code is pure Paho‑MQTT; nothing special for ACLs. citeturn0search0
+Here we assign the **publisher’s** username/password so it can successfully connect and publish to every topic it’s allowed to (in our ACL, both `topic1` and `topic2`).
 
 ---
 
-## 8  Subscribers
+**8  Subscribers**  
 
-Both scripts are identical except for `USERNAME/PASS` and the topic variable that we’ll toggle in phase 2.
+Each subscriber runs a simple loop that:  
+- Authenticates with its own **USERNAME/PASS**  
+- Subscribes to exactly one topic  
+- Prints incoming messages  
+
+You only need to change two lines for each subscriber:
 
 ```python
-# app/subscriber1.py  (change to subscriber2.py and edit creds/topic)
+USERNAME, PASS = "sub1", "sub1"
+TOPIC         = "topic1"   # subscriber1.py
 
-import paho.mqtt.client as mqtt, os
+# …and in subscriber2.py…
 
-BROKER, PORT = "localhost", 1883
-USERNAME, PASS = "sub1", "sub1pass"
-TOPIC     = "topic1"   # line 8 – switch to "topic2" in phase 2
-
-def on_connect(client, userdata, flags, rc, properties=None):
-    print("✔ connected, subscribing to", TOPIC)
-    client.subscribe(TOPIC)
-
-def on_message(client, userdata, msg):
-    print(f"← {msg.topic}: {msg.payload.decode()}")
-
-client = mqtt.Client(client_id="sub1")
-client.username_pw_set(USERNAME, PASS)
-client.on_connect  = on_connect
-client.on_message  = on_message
-client.connect(BROKER, PORT, keepalive=60)
-client.loop_forever()
+USERNAME, PASS = "sub2", "sub2"
+TOPIC         = "topic2"
 ```
+
+- **`sub1/sub1`** can connect and will only receive messages on `topic1`.  
+- **`sub2/sub2`** can connect and will only receive messages on `topic2`.  
+
+In **Phase 2**, you can demonstrate an ACL denial by changing `TOPIC` in `subscriber1.py` to `"topic2"`—it will connect successfully but see no messages.
 
 ---
 
