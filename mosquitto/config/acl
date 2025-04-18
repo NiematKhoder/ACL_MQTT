@@ -1,7 +1,7 @@
 # publisher may write to both topics
 user pub
-topic write topic1
-topic write topic2
+topic readwrite topic1
+topic readwrite topic2
 
 # subscriber 1 may only READ topic1
 user sub1
